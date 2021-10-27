@@ -28,12 +28,7 @@ namespace Store.Api
 
             services.AddApplicationServices();
             services.AddSwaggerApplicationServices();
-            services.AddCors(o => o.AddPolicy("AllowAll", builder =>
-            {
-                builder.AllowAnyOrigin()
-                       .AllowAnyMethod()
-                       .AllowAnyHeader();
-            }));
+            services.AddCoreApplicationServices();
             services.AddControllersWithViews();
             services.AddAutoMapper(typeof(MappingProfile));
             services.AddControllers();
@@ -59,7 +54,7 @@ namespace Store.Api
 
             app.UseStatusCodePagesWithReExecute("errors/{0}");
 
-            app.UseCors("AllowAll");
+            app.UseCoreDocumentation();
 
             app.UseHttpsRedirection();
 
