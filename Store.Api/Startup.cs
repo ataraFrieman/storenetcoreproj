@@ -4,12 +4,10 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.OpenApi.Models;
+using Store.Api.Extensions;
 using Store.Api.Mapping;
-using Store.Core;
-using Store.Core.Services;
+using Store.Api.Middleware;
 using Store.Data;
-using Store.Services;
 
 namespace Store.Api
 {
@@ -25,16 +23,11 @@ namespace Store.Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddDbContext<StoreContext>(
                 options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"), x => x.MigrationsAssembly("Store.Data")));
 
-            services.AddTransient<IProductService, ProductService>();
-
-            services.AddSwaggerGen(options =>
-            {
-                options.SwaggerDoc("v1", new OpenApiInfo { Title = "My Music", Version = "v1" });
-            });
+            services.AddApplicationServices();
+            services.AddSwaggerApplicationServices();
             services.AddCors(o => o.AddPolicy("AllowAll", builder =>
             {
                 builder.AllowAnyOrigin()
@@ -43,6 +36,7 @@ namespace Store.Api
             }));
             services.AddControllersWithViews();
             services.AddAutoMapper(typeof(MappingProfile));
+            services.AddControllers();
             services.AddSpaStaticFiles(configuration =>
             {
                 configuration.RootPath = "ClientApp/build";
@@ -52,20 +46,18 @@ namespace Store.Api
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.UseMiddleware<ExeptionMiddleware>();
+
             if (env.IsDevelopment())
             {
-                app.UseDeveloperExceptionPage();
-                app.UseSwagger();
-                app.UseSwaggerUI(c =>
-                {
-                    c.RoutePrefix = "";
-                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "My Music V1");
-                });
+                app.UseSwaggerDocumentation();
             }
             else
             {
                 app.UseHsts();
             }
+
+            app.UseStatusCodePagesWithReExecute("errors/{0}");
 
             app.UseCors("AllowAll");
 

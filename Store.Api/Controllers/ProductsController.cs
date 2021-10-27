@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using Store.Api.Errors;
 using Store.Api.Resources;
 using Store.Core.Entities;
 using Store.Core.Services;
@@ -34,6 +35,7 @@ namespace Store.Api.Controllers
         {
             var product = await _productService.GetProductByIdAsync(id);
             var productResources = _mapper.Map<Product, ProductResource>(product);
+            if(product==null) return NotFound(new ApiResponse(404));
             return Ok(productResources);
         }
 
