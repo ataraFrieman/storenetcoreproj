@@ -8,6 +8,7 @@ using Store.Api.Errors;
 using Store.Api.Resources;
 using Store.Core.Entities;
 using Store.Core.Services;
+using Store.Core.Specifications;
 
 namespace Store.Api.Controllers
 {
@@ -22,10 +23,10 @@ namespace Store.Api.Controllers
         }
 
         [HttpGet("[action]")]
-        public async Task<ActionResult<IEnumerable<Product>>> GetProducts()
+        public async Task<ActionResult<IEnumerable<Product>>> GetProducts([FromQuery]ProductSpecParams Productparams)
         {
 
-            var products = await _productService.GetAllProductsAsync();
+            var products = await _productService.GetAllProductsAsync(Productparams);
             var productResources = _mapper.Map<IEnumerable<Product>, IEnumerable<ProductResource>>(products);
             return Ok(productResources);
         }

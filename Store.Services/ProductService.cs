@@ -1,9 +1,12 @@
+using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Store.Core;
 using Store.Core.Entities;
 using Store.Core.Services;
 using Store.Core.Specifications;
+using Store.Services.Specifications;
 
 namespace Store.Services
 {
@@ -17,9 +20,10 @@ namespace Store.Services
             this._unitOfWork = unitOfWork;
         }
 
-        public async Task<IEnumerable<Product>> GetAllProductsAsync()
+        public async Task<IEnumerable<Product>> GetAllProductsAsync(ProductSpecParams Productparams)
         {
-            var spec = new ProductsWithBrandsAndtypesSpecifications();
+           
+            var spec = new ProductsWithBrandsAndtypesSpecifications(Productparams);
             return await _unitOfWork.Products.ListAsync(spec);
         }
 

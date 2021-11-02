@@ -25,7 +25,6 @@ namespace Store.Api
         {
             services.AddDbContext<StoreContext>(
                 options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"), x => x.MigrationsAssembly("Store.Data")));
-
             services.AddApplicationServices();
             services.AddSwaggerApplicationServices();
             services.AddCoreApplicationServices();
@@ -52,9 +51,8 @@ namespace Store.Api
                 app.UseHsts();
             }
 
-            app.UseStatusCodePagesWithReExecute("errors/{0}");
+            // app.UseStatusCodePagesWithReExecute("errors/{0}");
 
-            app.UseCoreDocumentation();
 
             app.UseHttpsRedirection();
 
@@ -63,6 +61,10 @@ namespace Store.Api
             app.UseStaticFiles();
 
             app.UseSpaStaticFiles();
+            
+            app.UseCoreDocumentation();
+
+            app.UseAuthentication();
 
             app.UseEndpoints(endpoints =>
             {
@@ -70,9 +72,6 @@ namespace Store.Api
                     name: "default",
                     pattern: "{controller}/{action=Index}/{id?}");
             });
-
-            app.UseAuthentication();
-
 
         }
     }
